@@ -231,7 +231,7 @@ export default function Recognition() {
           </Card>
 
           <AnimatePresence>
-            {recognizeMutation.data && (
+            {recognizeMutation.data && recognizeMutation.data.match_found && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-2">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-0.5">All Matches</p>
                 {recognizeMutation.data.all_matches.map((match, index) => (
@@ -271,18 +271,33 @@ export default function Recognition() {
               </motion.div>
             )}
 
+            {recognizeMutation.data && !recognizeMutation.data.match_found && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <Card>
+                  <CardContent className="p-4 flex flex-col items-center text-center" data-testid="no-match-card">
+                    <AlertTriangle className="w-8 h-8 text-amber-400 mb-2" />
+                    <p className="font-semibold text-foreground mb-1">No Match Found</p>
+                    <p className="text-sm text-muted-foreground mb-3">
+                      This face isn't registered yet. Would you like to register it?
+                    </p>
+                    <Button variant="outline" size="sm" onClick={() => setActiveTab("register")} data-testid="button-register-prompt">
+                      <UserCheck className="w-4 h-4 mr-2" />
+                      Register This Face
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+
             {recognizeMutation.error && !recognizeMutation.isPending && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <Card>
                   <CardContent className="p-4 flex flex-col items-center text-center">
                     <AlertTriangle className="w-8 h-8 text-destructive mb-2" />
-                    <p className="font-semibold text-foreground mb-1">No Match Found</p>
+                    <p className="font-semibold text-foreground mb-1">Recognition Error</p>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Try registering this face first.
+                      Something went wrong. Please try again.
                     </p>
-                    <Button variant="outline" size="sm" onClick={() => setActiveTab("register")}>
-                      Register Face
-                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>

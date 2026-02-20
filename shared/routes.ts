@@ -32,10 +32,11 @@ export const api = {
       path: "/api/recognize-face" as const,
       responses: {
         200: z.object({
+          match_found: z.boolean(),
           best_match: z.object({
             name: z.string(),
             confidence: z.number(),
-          }),
+          }).nullable(),
           all_matches: z.array(z.object({
             name: z.string(),
             confidence: z.number(),

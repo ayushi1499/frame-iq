@@ -264,15 +264,19 @@ export async function registerRoutes(
       const nameList = faceEntries.map((f, i) => `Person ${i + 1}: "${f.name}"`).join('\n');
 
       const parts: any[] = [
-        { text: `You are a face recognition system. Compare the QUERY face photo against ${faceEntries.length} registered face photos and rate how likely each is the SAME PERSON as the query.
+        { text: `You are a strict face recognition system. Compare the QUERY face photo against ${faceEntries.length} registered face photos and determine if ANY of them are the SAME PERSON as the query.
+
+IMPORTANT: Be very strict. Only give high scores when you are genuinely confident the faces belong to the same person. Most comparisons between different people should score BELOW 25.
 
 For each registered person, give a similarity score from 0 to 100:
-- 85-100: Very likely the same person (similar facial features, bone structure, face shape)
-- 60-84: Possibly the same person (some features match)
-- 30-59: Unlikely the same person
-- 0-29: Definitely different person
+- 80-100: Clearly the same person (matching facial structure, bone structure, distinctive features)
+- 50-79: Possibly the same person (several key features match closely)
+- 25-49: Some superficial similarity but likely different people
+- 0-24: Different person (this should be the most common score for genuinely different people)
 
-Focus on: face shape, eye spacing, nose shape, jawline, forehead, cheekbones. Ignore: lighting, angle, expression, glasses, hair style, image quality.
+Focus on: face shape, eye spacing and shape, nose shape and size, jawline, forehead shape, cheekbone structure, mouth shape, ear shape, distinctive facial features. Ignore: lighting, angle, expression, glasses, hair style, makeup, image quality, clothing.
+
+CRITICAL: If the query face does not match anyone, ALL scores should be below 25. Do NOT inflate scores. Two different people should score low even if they share the same gender, age range, or ethnicity.
 
 Registered people:
 ${nameList}
@@ -321,6 +325,9 @@ QUERY FACE:` },
 
       matches.sort((a, b) => b.confidence - a.confidence);
 
+      const MATCH_THRESHOLD = 40;
+      const hasMatch = matches.length > 0 && matches[0].confidence >= MATCH_THRESHOLD;
+
       const annotatedBuffer = await sharp(file.buffer)
         .resize(400)
         .toBuffer();
@@ -332,8 +339,9 @@ QUERY FACE:` },
       });
 
       res.json({
-        best_match: { name: matches[0].name, confidence: matches[0].confidence },
-        all_matches: allMatchesWithImages,
+        match_found: hasMatch,
+        best_match: hasMatch ? { name: matches[0].name, confidence: matches[0].confidence } : null,
+        all_matches: hasMatch ? allMatchesWithImages : [],
         annotated_image: `data:image/jpeg;base64,${annotatedBuffer.toString('base64')}`
       });
 

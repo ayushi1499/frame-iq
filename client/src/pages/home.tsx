@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { useStats, useAllFaces, useAllSummaries } from "@/hooks/use-api";
 import { BottomNav } from "@/components/bottom-nav";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ScanFace, Sparkles, FileText, ArrowRight, History, User, HelpCircle } from "lucide-react";
+import { ScanFace, Sparkles, FileText, ArrowRight, History, User, HelpCircle, Heart, ChevronDown, ChevronUp, Video } from "lucide-react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { OnboardingTour, useTourState } from "@/components/onboarding-tour";
 
 export default function Home() {
@@ -12,6 +13,8 @@ export default function Home() {
   const { data: faces } = useAllFaces();
   const { data: summaries } = useAllSummaries();
   const { showTour, startTour, endTour } = useTourState();
+  const [showStory, setShowStory] = useState(false);
+  const [showScript, setShowScript] = useState(false);
 
   const container = {
     hidden: { opacity: 0 },
@@ -190,6 +193,137 @@ export default function Home() {
           )}
         </div>
       )}
+
+      <div className="mt-8 space-y-3">
+        <Card className="overflow-hidden">
+          <button
+            className="w-full text-left"
+            onClick={() => setShowStory(!showStory)}
+            data-testid="button-toggle-story"
+          >
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center text-rose-400 shrink-0">
+                <Heart className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-foreground text-sm">Why We Built This</p>
+                <p className="text-xs text-muted-foreground">The story behind Frame IQ</p>
+              </div>
+              {showStory ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+            </CardContent>
+          </button>
+          <AnimatePresence>
+            {showStory && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="px-4 pb-4 space-y-3 text-sm text-muted-foreground leading-relaxed">
+                  <p>
+                    Frame IQ started as a simple question: <span className="text-foreground font-medium">What if AI could truly understand faces the way humans do?</span>
+                  </p>
+                  <p>
+                    Most face recognition tools rely on rigid mathematical models that break down with different lighting, angles, or expressions. We wanted something smarter -- a system that uses the same kind of visual reasoning a human would.
+                  </p>
+                  <p>
+                    By combining <span className="text-foreground font-medium">Google's Gemini AI</span> with multimodal image analysis, Frame IQ doesn't just compare pixels. It understands facial structure -- the shape of a jawline, the spacing between eyes, the curve of a nose -- and makes intelligent comparisons across multiple photos.
+                  </p>
+                  <p>
+                    We expanded the vision beyond recognition. Face Analysis gives you age, emotion, and ethnicity detection with fun personalized facts. Text Summarization lets you condense articles, notes, or reports with customizable styles.
+                  </p>
+                  <p>
+                    Frame IQ is built for everyone -- students, professionals, curious minds -- anyone who wants to see what happens when you put AI in their hands. <span className="text-foreground font-medium">No complexity, no jargon, just powerful tools that work.</span>
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Card>
+
+        <Card className="overflow-hidden">
+          <button
+            className="w-full text-left"
+            onClick={() => setShowScript(!showScript)}
+            data-testid="button-toggle-script"
+          >
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center text-cyan-400 shrink-0">
+                <Video className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-foreground text-sm">Demo Video Script</p>
+                <p className="text-xs text-muted-foreground">2-minute walkthrough for 2 presenters</p>
+              </div>
+              {showScript ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+            </CardContent>
+          </button>
+          <AnimatePresence>
+            {showScript && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="px-4 pb-4 space-y-4 text-sm leading-relaxed">
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Scene 1 -- Intro (0:00 - 0:20)</p>
+                    <p className="text-foreground font-medium mb-1">Person A:</p>
+                    <p className="text-muted-foreground">"Hey everyone! Ever wished your phone could recognize faces, analyze expressions, and summarize text -- all in one app?"</p>
+                    <p className="text-foreground font-medium mt-2 mb-1">Person B:</p>
+                    <p className="text-muted-foreground">"That's exactly what Frame IQ does. It's an AI-powered productivity tool built with Google's Gemini AI. Let us show you how it works."</p>
+                  </div>
+
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Scene 2 -- Face Registration (0:20 - 0:45)</p>
+                    <p className="text-foreground font-medium mb-1">Person A:</p>
+                    <p className="text-muted-foreground">"First, let's register a face. I'll open the Face Recognition tab, switch to 'Register New,' and either take a live photo or upload one. I'll type in my name and hit Register."</p>
+                    <p className="text-muted-foreground mt-1 italic">[Shows the registration flow on screen]</p>
+                    <p className="text-foreground font-medium mt-2 mb-1">Person B:</p>
+                    <p className="text-muted-foreground">"The app saves a high-quality display image and processes the face data behind the scenes. It's stored securely in the database, ready for recognition."</p>
+                  </div>
+
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Scene 3 -- Face Recognition (0:45 - 1:10)</p>
+                    <p className="text-foreground font-medium mb-1">Person B:</p>
+                    <p className="text-muted-foreground">"Now the exciting part -- recognition. I'll take a photo of Person A. The app sends the image along with all registered faces to Gemini AI."</p>
+                    <p className="text-foreground font-medium mt-2 mb-1">Person A:</p>
+                    <p className="text-muted-foreground">"Unlike traditional systems that compare pixels, Gemini actually understands facial features -- jawline, eye spacing, nose shape. It ranks every registered face by similarity. And if someone isn't registered, it tells you 'No Match Found' and prompts you to register."</p>
+                  </div>
+
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Scene 4 -- Face Analysis (1:10 - 1:35)</p>
+                    <p className="text-foreground font-medium mb-1">Person A:</p>
+                    <p className="text-muted-foreground">"Next up, Face Analysis. Upload any face photo, and AI detects the estimated age, gender, emotion, and ethnicity -- with confidence percentages."</p>
+                    <p className="text-foreground font-medium mt-2 mb-1">Person B:</p>
+                    <p className="text-muted-foreground">"My favorite part is the 'Fun Facts' section -- the AI generates three personalized, entertaining observations based on what it sees. Like noticing your smile, your style, or even your accessories!"</p>
+                  </div>
+
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Scene 5 -- Text Summarization (1:35 - 1:50)</p>
+                    <p className="text-foreground font-medium mb-1">Person B:</p>
+                    <p className="text-muted-foreground">"Frame IQ isn't just about faces. Paste any long text -- an article, lecture notes, a report -- pick your style: concise, detailed, or bullet points. Choose your max length, and AI generates a clean summary in seconds."</p>
+                    <p className="text-foreground font-medium mt-2 mb-1">Person A:</p>
+                    <p className="text-muted-foreground">"All your summaries are saved in history, so you can always come back to them."</p>
+                  </div>
+
+                  <div className="bg-muted/50 rounded-md p-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Scene 6 -- Tech & Closing (1:50 - 2:00)</p>
+                    <p className="text-foreground font-medium mb-1">Person A:</p>
+                    <p className="text-muted-foreground">"Under the hood: React and TypeScript on the frontend, Express and PostgreSQL on the backend, and Google Gemini AI powering all the intelligence."</p>
+                    <p className="text-foreground font-medium mt-2 mb-1">Person B:</p>
+                    <p className="text-muted-foreground">"Frame IQ -- face recognition, analysis, and summarization, all powered by AI. Thanks for watching!"</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Card>
+      </div>
 
       <OnboardingTour show={showTour} onComplete={endTour} />
       <BottomNav />
